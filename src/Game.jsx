@@ -82,13 +82,13 @@ const Game = () => {
     let pipeWidth = visiblePipeWidth * pipeScaleFactor; // Width of the pipe in the game
 
     let pipeGap = 250; // Gap between pipes in pixels
-    let pipeSpeed = 500; // Pipe speed in pixels per second
+    let pipeSpeed = 350; // Pipe speed in pixels per second
     let pipes = [];
 
     // Adjust pipe gap and interval for mobile devices
     if (isMobile) {
       pipeGap = pipeGap * (2 / 3); // Reduce gap by 1/3
-      pipeIntervalTime = 1500; // Pipes appear twice as often
+      pipeIntervalTime = 1000; // Pipes appear twice as often
     }
 
     // Background scrolling
