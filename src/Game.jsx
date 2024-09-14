@@ -61,12 +61,24 @@ const Game = () => {
     let isGameOver = false;
     let score = 0;
 
-    let jumpVelocity = -250; // Jump velocity in pixels per second
+    let jumpVelocity = -350; // Jump velocity in pixels per second
 
-    // Pipe dimensions
-    const pipeWidth = 270 * scaleFactor;
-    let pipeGap = 200; // Gap between pipes in pixels
-    let pipeSpeed = 400; // Pipe speed in pixels per second
+    // Pipe image dimensions
+    const totalPipeImageWidth = 360; // Total width of pipe.png image
+    const totalPipeImageHeight = 693; // Total height of pipe.png image
+    const visiblePipeWidth = 90; // Width of the actual visible pipe
+    const visiblePipeHeight = 693; // Height of the actual visible pipe
+
+    // Transparent space on sides
+    const transparentLeft = 135; // Transparent space on the left
+    const transparentRight = 135; // Transparent space on the right
+
+    // Scaling factor for pipe width
+    const pipeScaleFactor = 1; // Adjust to scale the pipe size in the game
+    let pipeWidth = visiblePipeWidth * pipeScaleFactor; // Width of the pipe in the game
+
+    let pipeGap = 250; // Gap between pipes in pixels
+    let pipeSpeed = 200; // Pipe speed in pixels per second
     let pipes = [];
 
     // Background scrolling
@@ -147,22 +159,31 @@ const Game = () => {
         let pipe = pipes[i];
         pipe.x -= pipeSpeed * deltaTime;
 
+        // Source coordinates for the visible pipe part
+        let sx = transparentLeft;
+        let sy = 0;
+        let sWidth = visiblePipeWidth;
+        let sHeight = totalPipeImageHeight;
+
+        // Destination dimensions on the canvas
+        let dx = pipe.x;
+        let dWidth = pipeWidth;
+
         // Draw top pipe
+        let topPipeHeight = pipe.topPipeHeight;
         ctx.drawImage(
           pipeImg,
-          pipe.x,
-          0,
-          pipeWidth,
-          pipe.topPipeHeight
+          sx, sy, sWidth, sHeight,
+          dx, 0, dWidth, topPipeHeight
         );
 
         // Draw bottom pipe
+        let bottomPipeY = pipe.bottomPipeY;
+        let bottomPipeHeight = pipe.bottomPipeHeight;
         ctx.drawImage(
           pipeImg,
-          pipe.x,
-          pipe.bottomPipeY,
-          pipeWidth,
-          pipe.bottomPipeHeight
+          sx, sy, sWidth, sHeight,
+          dx, bottomPipeY, dWidth, bottomPipeHeight
         );
 
         // Collision detection
