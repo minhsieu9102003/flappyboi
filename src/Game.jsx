@@ -57,17 +57,17 @@ const Game = () => {
     let birdX = 50 * scaleFactor;
     let birdY = canvas.height / 2;
     let birdVelocity = 0;
-    let gravity = 1000; // Gravity in pixels per second squared
+    let gravity = 1500; // Gravity in pixels per second squared
     let isGameOver = false;
     let score = 0;
 
-    let jumpVelocity = -350; // Jump velocity in pixels per second
+    let jumpVelocity = -200; // Jump velocity in pixels per second
 
     // Pipe image dimensions
     const totalPipeImageWidth = 360; // Total width of pipe.png image
     const totalPipeImageHeight = 693; // Total height of pipe.png image
     const visiblePipeWidth = 90; // Width of the actual visible pipe
-    const visiblePipeHeight = 693; // Height of the actual visible pipe
+    const visiblePipeHeight = 680; // Height of the actual visible pipe
 
     // Transparent space on sides
     const transparentLeft = 135; // Transparent space on the left
