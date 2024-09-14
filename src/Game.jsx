@@ -57,7 +57,7 @@ const Game = () => {
     let birdX = 50 * scaleFactor;
     let birdY = canvas.height / 2;
     let birdVelocity = 0;
-    let gravity = 500; // Gravity in pixels per second squared
+    let gravity = 1000; // Gravity in pixels per second squared
     let isGameOver = false;
     let score = 0;
 
