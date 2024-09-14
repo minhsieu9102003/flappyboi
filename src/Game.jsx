@@ -51,6 +51,7 @@ const Game = () => {
 
     let animationFrameId;
     let pipeInterval;
+    let pipeIntervalTime = 2000; // Default pipe generation interval
     let lastTime = performance.now(); // Initialize lastTime for time-based movement
 
     // Game variables accessible throughout useEffect
@@ -83,6 +84,12 @@ const Game = () => {
     let pipeGap = 250; // Gap between pipes in pixels
     let pipeSpeed = 500; // Pipe speed in pixels per second
     let pipes = [];
+
+    // Adjust pipe gap and interval for mobile devices
+    if (isMobile) {
+      pipeGap = pipeGap * (2 / 3); // Reduce gap by 1/3
+      pipeIntervalTime = 1000; // Pipes appear twice as often
+    }
 
     // Background scrolling
     let bgX = 0;
@@ -176,8 +183,14 @@ const Game = () => {
         let topPipeHeight = pipe.topPipeHeight;
         ctx.drawImage(
           pipeImg,
-          sx, sy, sWidth, sHeight,
-          dx, 0, dWidth, topPipeHeight
+          sx,
+          sy,
+          sWidth,
+          sHeight,
+          dx,
+          0,
+          dWidth,
+          topPipeHeight
         );
 
         // Draw bottom pipe
@@ -185,18 +198,21 @@ const Game = () => {
         let bottomPipeHeight = pipe.bottomPipeHeight;
         ctx.drawImage(
           pipeImg,
-          sx, sy, sWidth, sHeight,
-          dx, bottomPipeY, dWidth, bottomPipeHeight
+          sx,
+          sy,
+          sWidth,
+          sHeight,
+          dx,
+          bottomPipeY,
+          dWidth,
+          bottomPipeHeight
         );
 
         // Collision detection
         if (
           birdX + birdWidth > pipe.x &&
           birdX < pipe.x + pipeWidth &&
-          (
-            birdY < pipe.topPipeHeight ||
-            birdY + birdHeight > pipe.bottomPipeY
-          )
+          (birdY < pipe.topPipeHeight || birdY + birdHeight > pipe.bottomPipeY)
         ) {
           isGameOver = true;
 
@@ -283,7 +299,7 @@ const Game = () => {
 
       // Start generating pipes again
       generatePipe();
-      pipeInterval = setInterval(generatePipe, 2000);
+      pipeInterval = setInterval(generatePipe, pipeIntervalTime);
 
       // Start the game loop again
       animationFrameId = requestAnimationFrame(gameLoop);
@@ -345,8 +361,8 @@ const Game = () => {
 
       // Generate initial pipes
       generatePipe();
-      // Generate pipes every 2000ms
-      pipeInterval = setInterval(generatePipe, 2000);
+      // Generate pipes at specified interval
+      pipeInterval = setInterval(generatePipe, pipeIntervalTime);
 
       // Start the game loop with initial timestamp
       lastTime = performance.now();
