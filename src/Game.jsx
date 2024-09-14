@@ -61,10 +61,10 @@ const Game = () => {
     let isGameOver = false;
     let score = 0;
 
-    let jumpVelocity = -350; // Jump velocity in pixels per second
+    let jumpVelocity = -250; // Jump velocity in pixels per second
 
     // Pipe dimensions
-    const pipeWidth = 90 * scaleFactor;
+    const pipeWidth = 270 * scaleFactor;
     let pipeGap = 200; // Gap between pipes in pixels
     let pipeSpeed = 400; // Pipe speed in pixels per second
     let pipes = [];
