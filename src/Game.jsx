@@ -22,8 +22,11 @@ const Game = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Remove scaling factor for consistent behavior across devices
-    const scaleFactor = 1;
+    // Determine if the device is mobile based on screen width
+    const isMobile = window.innerWidth <= 768;
+
+    // Scaling factor for mobile devices
+    const sizeScaleFactor = isMobile ? 0.5 : 1; // Reduce sizes by half on mobile devices
 
     // Function to load images
     const loadImage = (src) => {
@@ -51,10 +54,10 @@ const Game = () => {
     let lastTime = performance.now(); // Initialize lastTime for time-based movement
 
     // Game variables accessible throughout useEffect
-    let birdWidth = 100 * scaleFactor;
-    let birdHeight = 70 * scaleFactor;
+    let birdWidth = 100 * sizeScaleFactor;
+    let birdHeight = 70 * sizeScaleFactor;
 
-    let birdX = 50 * scaleFactor;
+    let birdX = 50 * sizeScaleFactor;
     let birdY = canvas.height / 2;
     let birdVelocity = 0;
     let gravity = 1500; // Gravity in pixels per second squared
@@ -74,7 +77,7 @@ const Game = () => {
     const transparentRight = 135; // Transparent space on the right
 
     // Scaling factor for pipe width
-    const pipeScaleFactor = 1; // Adjust to scale the pipe size in the game
+    const pipeScaleFactor = sizeScaleFactor; // Adjust pipe size for mobile devices
     let pipeWidth = visiblePipeWidth * pipeScaleFactor; // Width of the pipe in the game
 
     let pipeGap = 250; // Gap between pipes in pixels
@@ -265,7 +268,7 @@ const Game = () => {
       if (!isGameOver) return;
 
       // Reset game variables
-      birdX = 50;
+      birdX = 50 * sizeScaleFactor;
       birdY = canvas.height / 2;
       birdVelocity = 0;
       isGameOver = false;
