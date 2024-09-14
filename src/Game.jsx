@@ -66,7 +66,7 @@ const Game = () => {
     // Pipe dimensions
     const pipeWidth = 90 * scaleFactor;
     let pipeGap = 200; // Gap between pipes in pixels
-    let pipeSpeed = 200; // Pipe speed in pixels per second
+    let pipeSpeed = 400; // Pipe speed in pixels per second
     let pipes = [];
 
     // Background scrolling
