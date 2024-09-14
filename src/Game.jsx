@@ -22,11 +22,8 @@ const Game = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Determine if the device is mobile based on screen width
-    const isMobile = window.innerWidth <= 768;
-
-    // Scaling factor for mobile devices
-    const scaleFactor = isMobile ? 0.55 : 1; // Adjust scaling as needed
+    // Remove scaling factor for consistent behavior across devices
+    const scaleFactor = 1;
 
     // Function to load images
     const loadImage = (src) => {
@@ -51,39 +48,30 @@ const Game = () => {
 
     let animationFrameId;
     let pipeInterval;
+    let lastTime = performance.now(); // Initialize lastTime for time-based movement
 
     // Game variables accessible throughout useEffect
     let birdWidth = 100 * scaleFactor;
     let birdHeight = 70 * scaleFactor;
 
     let birdX = 50 * scaleFactor;
-    let birdY = (canvas.height / 2) * scaleFactor;
+    let birdY = canvas.height / 2;
     let birdVelocity = 0;
-    let gravity = 0.1 * scaleFactor;
+    let gravity = 500; // Gravity in pixels per second squared
     let isGameOver = false;
     let score = 0;
 
-    let jumpVelocity = -5 * scaleFactor;
+    let jumpVelocity = -350; // Jump velocity in pixels per second
 
-    // Pipe image dimensions
-    const totalPipeImageWidth = 360;
-    const totalPipeImageHeight = 693;
-    const visiblePipeWidth = 90;
-    const visiblePipeHeight = 680;
-
-    const transparentLeft = 135;
-    const transparentRight = 135;
-
-    const pipeScaleFactor = 1;
-    let pipeWidth = visiblePipeWidth * pipeScaleFactor * scaleFactor;
-
-    let pipeGap = 250 * scaleFactor;
-    let pipeSpeed = 2 * scaleFactor;
+    // Pipe dimensions
+    const pipeWidth = 90 * scaleFactor;
+    let pipeGap = 200; // Gap between pipes in pixels
+    let pipeSpeed = 200; // Pipe speed in pixels per second
     let pipes = [];
 
     // Background scrolling
     let bgX = 0;
-    let bgSpeed = 0.5 * scaleFactor;
+    let bgSpeed = 50; // Background speed in pixels per second
 
     // Declare image variables
     let birdImg, pipeImg, bgImg;
@@ -91,7 +79,7 @@ const Game = () => {
     // Generate pipes function
     const generatePipe = () => {
       // Randomly determine the height of the top pipe
-      let minPipeHeight = 50 * scaleFactor;
+      let minPipeHeight = 50;
       let maxPipeHeight = canvas.height - pipeGap - minPipeHeight;
       let topPipeHeight =
         Math.random() * (maxPipeHeight - minPipeHeight) + minPipeHeight;
@@ -108,20 +96,23 @@ const Game = () => {
       });
     };
 
-    // Game loop function
-    const gameLoop = () => {
+    // Game loop function with time-based movement
+    const gameLoop = (currentTime) => {
       if (isGameOver) {
         showGameOver();
         return;
       }
 
+      const deltaTime = (currentTime - lastTime) / 1000; // Convert to seconds
+      lastTime = currentTime;
+
       // Clear the canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Move background
-      bgX -= bgSpeed;
+      bgX -= bgSpeed * deltaTime;
       if (bgX <= -canvas.width) {
-        bgX = 0;
+        bgX += canvas.width;
       }
 
       // Draw the background
@@ -129,12 +120,12 @@ const Game = () => {
       ctx.drawImage(bgImg, bgX + canvas.width, 0, canvas.width, canvas.height);
 
       // Bird physics
-      birdVelocity += gravity;
-      birdY += birdVelocity;
+      birdVelocity += gravity * deltaTime;
+      birdY += birdVelocity * deltaTime;
 
       // Calculate bird rotation angle based on velocity
       let maxAngle = 25;
-      let angle = (birdVelocity / 10) * maxAngle;
+      let angle = (birdVelocity / 500) * maxAngle;
       angle = Math.max(Math.min(angle, maxAngle), -maxAngle);
       let angleInRadians = (angle * Math.PI) / 180;
 
@@ -154,37 +145,25 @@ const Game = () => {
       // Draw and update pipes
       for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
-        pipe.x -= pipeSpeed;
-
-        // Source coordinates for the visible pipe part
-        let sx = transparentLeft;
-        let sy = 0;
-        let sWidth = visiblePipeWidth;
-        let sHeight = totalPipeImageHeight;
-
-        // Destination dimensions on the canvas
-        let dx = pipe.x;
-        let dWidth = pipeWidth;
+        pipe.x -= pipeSpeed * deltaTime;
 
         // Draw top pipe
-        let topPipeHeight = pipe.topPipeHeight;
         ctx.drawImage(
           pipeImg,
-          sx, sy, sWidth, sHeight,
-          dx, 0, dWidth, topPipeHeight
+          pipe.x,
+          0,
+          pipeWidth,
+          pipe.topPipeHeight
         );
 
-        // Draw bottom pipe (flipped vertically)
-        ctx.save();
-        ctx.translate(pipe.x + dWidth / 2, pipe.bottomPipeY + pipe.bottomPipeHeight / 2);
-        ctx.rotate(Math.PI); // Rotate 180 degrees
+        // Draw bottom pipe
         ctx.drawImage(
           pipeImg,
-          sx, sy, sWidth, sHeight,
-          -dWidth / 2, -pipe.bottomPipeHeight / 2,
-          dWidth, pipe.bottomPipeHeight
+          pipe.x,
+          pipe.bottomPipeY,
+          pipeWidth,
+          pipe.bottomPipeHeight
         );
-        ctx.restore();
 
         // Collision detection
         if (
@@ -226,8 +205,8 @@ const Game = () => {
 
       // Draw score
       ctx.fillStyle = '#000';
-      ctx.font = `${30 * scaleFactor}px Arial`;
-      ctx.fillText('Score: ' + score, 10 * scaleFactor, 50 * scaleFactor);
+      ctx.font = `30px Arial`;
+      ctx.fillText('Score: ' + score, 10, 50);
 
       // Check for collision with ground or ceiling
       if (birdY + birdHeight > canvas.height || birdY < 0) {
@@ -238,6 +217,7 @@ const Game = () => {
         hitSound.play();
       }
 
+      // Request next frame
       animationFrameId = requestAnimationFrame(gameLoop);
     };
 
@@ -247,15 +227,15 @@ const Game = () => {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.fillStyle = '#fff';
-      ctx.font = `${60 * scaleFactor}px Arial`;
+      ctx.font = `60px Arial`;
       ctx.textAlign = 'center';
-      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 30 * scaleFactor);
-      ctx.font = `${30 * scaleFactor}px Arial`;
-      ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 20 * scaleFactor);
+      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 30);
+      ctx.font = `30px Arial`;
+      ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 20);
       ctx.fillText(
         'Click or Tap to Restart',
         canvas.width / 2,
-        canvas.height / 2 + 60 * scaleFactor
+        canvas.height / 2 + 60
       );
     };
 
@@ -264,13 +244,14 @@ const Game = () => {
       if (!isGameOver) return;
 
       // Reset game variables
-      birdX = 50 * scaleFactor;
-      birdY = (canvas.height / 2) * scaleFactor;
+      birdX = 50;
+      birdY = canvas.height / 2;
       birdVelocity = 0;
       isGameOver = false;
       score = 0;
       pipes = [];
       bgX = 0;
+      lastTime = performance.now();
 
       // Clear previous intervals and animation frames
       cancelAnimationFrame(animationFrameId);
@@ -281,7 +262,7 @@ const Game = () => {
       pipeInterval = setInterval(generatePipe, 2000);
 
       // Start the game loop again
-      gameLoop();
+      animationFrameId = requestAnimationFrame(gameLoop);
     };
 
     // Event handlers
@@ -343,8 +324,9 @@ const Game = () => {
       // Generate pipes every 2000ms
       pipeInterval = setInterval(generatePipe, 2000);
 
-      // Start the game loop
-      gameLoop();
+      // Start the game loop with initial timestamp
+      lastTime = performance.now();
+      animationFrameId = requestAnimationFrame(gameLoop);
     };
 
     // Start the game
