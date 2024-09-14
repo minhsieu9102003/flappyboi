@@ -61,7 +61,7 @@ const Game = () => {
     let isGameOver = false;
     let score = 0;
 
-    let jumpVelocity = -200; // Jump velocity in pixels per second
+    let jumpVelocity = -600; // Jump velocity in pixels per second
 
     // Pipe image dimensions
     const totalPipeImageWidth = 360; // Total width of pipe.png image
