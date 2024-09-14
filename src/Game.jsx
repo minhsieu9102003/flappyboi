@@ -87,8 +87,8 @@ const Game = () => {
 
     // Adjust pipe gap and interval for mobile devices
     if (isMobile) {
-      pipeGap = pipeGap * (1 / 3); // Reduce gap by 1/3
-      pipeIntervalTime = 1000; // Pipes appear twice as often
+      pipeGap = pipeGap * (2 / 3); // Reduce gap by 1/3
+      pipeIntervalTime = 1500; // Pipes appear twice as often
     }
 
     // Background scrolling
